@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "doctor-1",
+      "description": "Portrait of a female doctor.",
+      "imageUrl": "https://picsum.photos/seed/doctor1/200/200",
+      "imageHint": "doctor portrait"
+    },
+    {
+      "id": "patient-1",
+      "description": "Portrait of an elderly man.",
+      "imageUrl": "https://picsum.photos/seed/patient1/200/200",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "patient-2",
+      "description": "Portrait of an elderly woman.",
+      "imageUrl": "https://picsum.photos/seed/patient2/200/200",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "patient-3",
+      "description": "Portrait of a middle-aged man.",
+      "imageUrl": "https://picsum.photos/seed/patient3/200/200",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "scan-1",
+      "description": "CT scan of a lung with a visible nodule.",
+      "imageUrl": "https://picsum.photos/seed/scan1/600/400",
+      "imageHint": "lung scan"
+    },
+    {
+      "id": "scan-2",
+      "description": "Clear CT scan of a healthy lung.",
+      "imageUrl": "https://picsum.photos/seed/scan2/600/400",
+      "imageHint": "lung scan"
+    },
+    {
+      "id": "upload-placeholder",
+      "description": "Placeholder for file upload area.",
+      "imageUrl": "https://picsum.photos/seed/upload/600/400",
+      "imageHint": "medical illustration"
+    }
+  ]
 }
