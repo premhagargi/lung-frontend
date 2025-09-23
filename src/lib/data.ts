@@ -10,7 +10,7 @@ let doctors: Doctor[] = [
     hospital: 'Unity Health Toronto',
     license_number: 'A-12345',
     phone: '555-0101',
-    is_profile_complete: false,
+    is_profile_complete: true,
     avatar: placeholderImages.find(p => p.id === 'doctor-1')?.imageUrl || '',
   },
 ];
