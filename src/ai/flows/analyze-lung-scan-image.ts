@@ -4,7 +4,7 @@
  *
  * - analyzeLungScanImage - A function that handles the lung scan image analysis process.
  * - AnalyzeLungScanImageInput - The input type for the analyzeLungScanImage function.
- * - AnalyzeLungScanImageOutput - The return type for the analyzeLungScanImage function.
+ * - AnalyzeLungScanImageOutput - The return type for the analyzeLungscanImage function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -65,7 +65,7 @@ const analyzeLungScanImageFlow = ai.defineFlow(
     const formData = new FormData();
     formData.append('file', imageBlob, 'scan.png');
 
-    const response = await fetch('http://localhost:5000/', {
+    const response = await fetch('http://localhost:5000/predict', {
       method: 'POST',
       body: formData,
     });
