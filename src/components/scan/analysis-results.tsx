@@ -2,13 +2,14 @@ import type { LungScan } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import AccuracyChart from './accuracy-chart';
 import { AlertTriangle, CheckCircle2, Shield, Stethoscope } from 'lucide-react';
+import ModelPredictionsChart from './model-predictions-chart';
 
 interface AnalysisResultsProps {
   analysis: LungScan['ai_analysis'];
 }
 
 export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
-  const { has_cancer, accuracy_percentage, confidence_level, precautions, overcome_solutions } = analysis;
+  const { has_cancer, accuracy_percentage, confidence_level, precautions, overcome_solutions, predictions } = analysis;
 
   const getConfidenceBadge = (level: string) => {
     const baseClasses = "capitalize";
@@ -27,7 +28,7 @@ export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center justify-center gap-4 rounded-lg border bg-background p-6">
-        <h3 className="text-lg font-semibold">AI Diagnosis</h3>
+        <h3 className="text-lg font-semibold">AI Diagnosis Summary</h3>
         {has_cancer ? (
           <div className="flex items-center gap-2 text-red-600">
             <AlertTriangle className="h-6 w-6" />
@@ -43,7 +44,7 @@ export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
             <AccuracyChart accuracy={accuracy_percentage} />
             <div className="text-center">
                 <div className="text-3xl font-bold">{getConfidenceBadge(confidence_level)}</div>
-                <div className="text-sm text-muted-foreground">Confidence</div>
+                <div className="text-sm text-muted-foreground">Overall Confidence</div>
             </div>
         </div>
       </div>
@@ -65,7 +66,7 @@ export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
           </h4>
           <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
             {overcome_solutions.map((item, index) => <li key={index}>{item}</li>)}
-          </ul>
+          ul>
         </div>
       </div>
       

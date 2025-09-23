@@ -13,6 +13,7 @@ import ImageUpload from '@/components/scan/image-upload';
 import AnalysisResults from '@/components/scan/analysis-results';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { analyzeLungScanImage } from '@/ai/flows/analyze-lung-scan-image';
+import ModelPredictionsChart from '@/components/scan/model-predictions-chart';
 
 type AnalysisResult = Awaited<ReturnType<typeof analyzeLungScanImage>>;
 
@@ -119,13 +120,17 @@ export default function NewScanPage() {
                 </div>
               ) : analysisResult && (
                 <div className="grid md:grid-cols-2 gap-6">
-                    <ImageUpload onImageUpload={handleImageUpload} initialImage={imageDataUrl}/>
+                    <div className="space-y-4">
+                      <ImageUpload onImageUpload={handleImageUpload} initialImage={imageDataUrl}/>
+                      <ModelPredictionsChart predictions={analysisResult.predictions} />
+                    </div>
                     <AnalysisResults analysis={{
                         has_cancer: analysisResult.hasCancer,
                         accuracy_percentage: analysisResult.accuracyPercentage,
                         confidence_level: analysisResult.confidenceLevel as 'Low' | 'Medium' | 'High',
                         precautions: analysisResult.precautions,
                         overcome_solutions: analysisResult.overcomeSolutions,
+                        predictions: analysisResult.predictions,
                     }}/>
                 </div>
               )}

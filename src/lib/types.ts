@@ -28,6 +28,12 @@ export interface Patient {
 export type ScanStatus = 'Pending' | 'Analyzed' | 'Reviewed';
 export type ConfidenceLevel = 'Low' | 'Medium' | 'High';
 
+export type ModelPrediction = {
+  model: string;
+  prediction: string;
+  confidence: string;
+};
+
 export interface LungScan {
   id: string;
   patient_id: string;
@@ -40,6 +46,7 @@ export interface LungScan {
     confidence_level: ConfidenceLevel;
     precautions: string[];
     overcome_solutions: string[];
+    predictions?: ModelPrediction[];
   };
   doctor_notes: string;
   status: ScanStatus;

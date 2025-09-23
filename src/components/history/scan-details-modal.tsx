@@ -12,8 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { LungScan, Patient } from '@/lib/types';
 import { format } from 'date-fns';
-import { AlertTriangle, CheckCircle2, Shield, Stethoscope } from 'lucide-react';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import AnalysisResults from '../scan/analysis-results';
+import ModelPredictionsChart from '../scan/model-predictions-chart';
 
 
 interface ScanDetailsModalProps {
@@ -61,6 +62,9 @@ export function ScanDetailsModal({ scan, patient, isOpen, onOpenChange }: ScanDe
                     className="rounded-lg object-cover border"
                   />
                 </div>
+                 {scan.ai_analysis.predictions && (
+                  <ModelPredictionsChart predictions={scan.ai_analysis.predictions} />
+                )}
                 <div className="p-4 border rounded-lg">
                     <h3 className="font-semibold mb-2">Doctor's Notes</h3>
                     <p className="text-sm text-muted-foreground">{scan.doctor_notes || "No notes provided."}</p>

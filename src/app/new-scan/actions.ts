@@ -42,6 +42,7 @@ export async function performScanAnalysis(input: ActionInput): Promise<ActionRes
         confidence_level: aiAnalysis.confidenceLevel as 'Low' | 'Medium' | 'High',
         precautions: aiAnalysis.precautions,
         overcome_solutions: aiAnalysis.overcomeSolutions,
+        predictions: aiAnalysis.predictions,
       },
       doctor_notes: doctorNotes || '',
       status: 'Analyzed',
@@ -50,6 +51,10 @@ export async function performScanAnalysis(input: ActionInput): Promise<ActionRes
     return { success: true, scanId: newScan.id };
   } catch (error) {
     console.error('Error during scan analysis action:', error);
-    return { success: false, error: 'An unexpected error occurred during AI analysis.' };
+    let errorMessage = 'An unexpected error occurred during AI analysis.';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+    return { success: false, error: errorMessage };
   }
 }
