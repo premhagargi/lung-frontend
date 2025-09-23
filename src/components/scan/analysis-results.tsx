@@ -66,7 +66,7 @@ export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
           </h4>
           <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
             {overcome_solutions.map((item, index) => <li key={index}>{item}</li>)}
-          ul>
+          </ul>
         </div>
       </div>
       
