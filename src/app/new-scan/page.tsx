@@ -67,7 +67,7 @@ export default function NewScanPage() {
             title: "Scan Saved",
             description: "The analysis has been saved to the patient's history.",
         });
-        router.push(`/patients/${selectedPatient.id}`);
+        router.push(`/`);
     } else {
         toast({
             variant: "destructive",
