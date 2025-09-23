@@ -63,7 +63,7 @@ const analyzeLungScanImageFlow = ai.defineFlow(
     
     const imageBlob = dataURItoBlob(scanImageUri);
     const formData = new FormData();
-    formData.append('file', imageBlob, 'scan.png');
+    formData.append('image', imageBlob, 'scan.png');
 
     const response = await fetch('http://localhost:5000/predict', {
       method: 'POST',
