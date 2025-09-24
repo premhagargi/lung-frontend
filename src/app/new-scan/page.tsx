@@ -8,19 +8,28 @@ import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
 import { performScanAnalysis } from './actions';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import PatientSelector from '@/components/scan/patient-selector';
 import ImageUpload from '@/components/scan/image-upload';
 import AnalysisResults from '@/components/scan/analysis-results';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { analyzeLungScanImage } from '@/ai/flows/analyze-lung-scan-image';
 import ModelPredictionsChart from '@/components/scan/model-predictions-chart';
+import { generateScanReportPDF } from '@/lib/pdf-report';
 
 type AnalysisResult = Awaited<ReturnType<typeof analyzeLungScanImage>>;
+
+const availableModels = [
+  { key: 'cnn', label: 'Convolutional Neural Network (CNN)' },
+  { key: 'nb', label: 'Naive Bayes (NB)' },
+  { key: 'resnet', label: 'ResNet' },
+];
 
 export default function NewScanPage() {
   const [step, setStep] = useState(1);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [selectedModels, setSelectedModels] = useState<string[]>(['cnn', 'nb', 'resnet']);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -31,13 +40,18 @@ export default function NewScanPage() {
     setStep(2);
   };
 
-  const handleImageUpload = async (dataUrl: string) => {
+  const handleImageUpload = (dataUrl: string) => {
     setImageDataUrl(dataUrl);
+    setStep(2.5);
+  };
+
+  const handleModelSelection = async () => {
+    if (!imageDataUrl) return;
     setIsLoading(true);
     setStep(3);
-    
+
     try {
-      const result = await analyzeLungScanImage({ scanImageUri: dataUrl });
+      const result = await analyzeLungScanImage({ scanImageUri: imageDataUrl, selectedModels });
       setAnalysisResult(result);
     } catch (error) {
       console.error(error);
@@ -46,7 +60,7 @@ export default function NewScanPage() {
         title: 'Analysis Failed',
         description: 'The AI model could not process the image. Please try again.',
       });
-      setStep(2); // Go back to upload step
+      setStep(2.5); // Go back to model selection step
     } finally {
       setIsLoading(false);
     }
@@ -78,10 +92,46 @@ export default function NewScanPage() {
     }
   }
 
+  const handleDownloadPDF = () => {
+    if (!analysisResult || !selectedPatient) return;
+
+    const scanDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    const scanTime = new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    generateScanReportPDF({
+      patient: selectedPatient,
+      scanResult: {
+        predictions: analysisResult.predictions,
+        hasCancer: analysisResult.hasCancer,
+        accuracyPercentage: analysisResult.accuracyPercentage,
+        confidenceLevel: analysisResult.confidenceLevel,
+        precautions: analysisResult.precautions,
+        overcomeSolutions: analysisResult.overcomeSolutions,
+      },
+      scanDate,
+      scanTime,
+      analyzedBy: selectedPatient.name, // Using patient name as analyzed by for now
+      reportId: `RPT${Date.now()}`
+    });
+
+    toast({
+      title: "PDF Downloaded",
+      description: "The scan report has been downloaded successfully.",
+    });
+  }
+
   const resetFlow = () => {
     setStep(1);
     setSelectedPatient(null);
     setImageDataUrl(null);
+    setSelectedModels(['cnn', 'nb', 'resnet']);
     setAnalysisResult(null);
   }
 
@@ -105,6 +155,41 @@ export default function NewScanPage() {
             </CardContent>
             <CardFooter>
               <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+            </CardFooter>
+          </Card>
+        );
+      case 2.5:
+        return (
+          <Card className="w-full max-w-2xl mx-auto bg-card/80 backdrop-blur-sm">
+            <CardHeader><CardTitle>Step 2.5: Select Models for {selectedPatient?.name}</CardTitle></CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">Choose which AI models to run for the analysis. All models are selected by default.</p>
+              <div className="space-y-3">
+                {availableModels.map((model) => (
+                  <div key={model.key} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={model.key}
+                      checked={selectedModels.includes(model.key)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedModels([...selectedModels, model.key]);
+                        } else {
+                          setSelectedModels(selectedModels.filter(m => m !== model.key));
+                        }
+                      }}
+                    />
+                    <label htmlFor={model.key} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      {model.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button variant="outline" onClick={() => setStep(2)}><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+              <Button onClick={handleModelSelection} disabled={selectedModels.length === 0}>
+                Analyze with {selectedModels.length} Model{selectedModels.length !== 1 ? 's' : ''} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </CardFooter>
           </Card>
         );
@@ -137,9 +222,19 @@ export default function NewScanPage() {
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="outline" onClick={resetFlow}>Start Over</Button>
-              <Button onClick={handleSaveAndFinish} disabled={isLoading || !analysisResult} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : <>Save and Finish <ArrowRight className="ml-2 h-4 w-4" /></>}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadPDF}
+                  disabled={!analysisResult}
+                  className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                >
+                  📄 Download PDF Report
+                </Button>
+                <Button onClick={handleSaveAndFinish} disabled={isLoading || !analysisResult} className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                  {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : <>Save and Finish <ArrowRight className="ml-2 h-4 w-4" /></>}
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         );

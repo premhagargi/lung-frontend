@@ -16,6 +16,10 @@ const AnalyzeLungScanImageInputSchema = z.object({
     .describe(
       "A lung scan image as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  selectedModels: z
+    .array(z.string())
+    .optional()
+    .describe("List of models to run. If not provided, all models will be run."),
 });
 export type AnalyzeLungScanImageInput = z.infer<typeof AnalyzeLungScanImageInputSchema>;
 
@@ -67,12 +71,13 @@ const analyzeLungScanImageFlow = ai.defineFlow(
     inputSchema: AnalyzeLungScanImageInputSchema,
     outputSchema: AnalyzeLungScanImageOutputSchema,
   },
-  async ({ scanImageUri }) => {
+  async ({ scanImageUri, selectedModels }) => {
     const imageBlob = dataURItoBlob(scanImageUri);
     const formData = new FormData();
     formData.append('file', imageBlob, 'scan.png');
 
-    const models = ['cnn', 'nb', 'resnet'];
+    const allModels = ['cnn', 'nb', 'resnet'];
+    const models = selectedModels && selectedModels.length > 0 ? selectedModels : allModels;
     const predictions: { model: string; prediction: string; predictionLabel: string; confidence: number }[] = [];
 
     for (const model of models) {
