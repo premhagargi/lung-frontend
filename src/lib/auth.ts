@@ -1,3 +1,4 @@
+
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -6,6 +7,8 @@ import {
   onAuthStateChanged,
   User,
   updateProfile,
+  confirmPasswordReset as firebaseConfirmPasswordReset,
+  applyActionCode,
 } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -61,11 +64,25 @@ export async function logoutUser(): Promise<void> {
 // Send password reset email
 export async function resetPassword(email: string): Promise<void> {
   try {
-    await sendPasswordResetEmail(auth, email);
+    const actionCodeSettings = {
+        url: `${window.location.origin}/reset-password`,
+        handleCodeInApp: true,
+    };
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
   } catch (error) {
     throw new Error(`Password reset failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+// Confirm password reset
+export async function confirmPasswordReset(oobCode: string, newPassword: string): Promise<void> {
+    try {
+        await firebaseConfirmPasswordReset(auth, oobCode, newPassword);
+    } catch (error) {
+        throw new Error(`Password reset failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
 
 // Listen to auth state changes
 export function onAuthStateChange(callback: (user: AuthUser | null) => void) {
