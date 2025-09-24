@@ -243,5 +243,5 @@ export default function NewScanPage() {
     }
   };
 
-  return <div className="container mx-auto py-8">{renderStep()}</div>;
+  return <div className="py-8">{renderStep()}</div>;
 }

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, Users, FilePlus, HeartPulse } from 'lucide-react';
+import { Home, Users, FilePlus, HeartPulse, LogOut } from 'lucide-react';
 import {
   Sidebar,
   SidebarHeader,
@@ -8,8 +8,21 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
+import { logoutUser } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 export function AppSidebar() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -42,6 +55,12 @@ export function AppSidebar() {
                 <FilePlus />
                 <span>New Scan</span>
               </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
+              <LogOut />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

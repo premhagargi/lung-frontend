@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getDoctor, getPatients, getRecentScans } from '@/lib/data';
 import type { Doctor, Patient, LungScan } from '@/lib/types';
 import WelcomeHeader from '@/components/dashboard/welcome-header';
@@ -8,8 +9,11 @@ import StatsCards from '@/components/dashboard/stats-cards';
 import RecentScans from '@/components/dashboard/recent-scans';
 import DoctorOnboarding from '@/components/dashboard/doctor-onboarding';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/lib/auth-context';
 
 export default function DashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [scans, setScans] = useState<LungScan[]>([]);
@@ -17,24 +21,35 @@ export default function DashboardPage() {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const doctorData = await getDoctor('1'); // Simulate fetching logged-in doctor
-      const patientsData = await getPatients(doctorData.id);
-      const scansData = await getRecentScans(doctorData.id, 5);
-      
-      setDoctor(doctorData);
-      setPatients(patientsData);
-      setScans(scansData);
-      
-      if (!doctorData.is_profile_complete) {
-        setOnboardingOpen(true);
+    if (!authLoading) {
+      if (!user) {
+        router.push('/login');
+        return;
       }
-      
-      setLoading(false);
-    };
 
-    fetchData();
-  }, []);
+      const fetchData = async () => {
+        try {
+          const doctorData = await getDoctor(user.uid);
+          const patientsData = await getPatients(doctorData.id);
+          const scansData = await getRecentScans(doctorData.id, 5);
+
+          setDoctor(doctorData);
+          setPatients(patientsData);
+          setScans(scansData);
+
+          if (!doctorData.is_profile_complete) {
+            setOnboardingOpen(true);
+          }
+        } catch (error) {
+          console.error('Failed to fetch data:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [user, authLoading, router]);
 
   const handleOnboardingComplete = (updatedDoctor: Doctor) => {
     setDoctor(updatedDoctor);
@@ -50,10 +65,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 p-4 md:p-8">
-      <DoctorOnboarding 
-        doctor={doctor} 
-        isOpen={onboardingOpen} 
+    <div className="flex flex-col gap-8">
+      <DoctorOnboarding
+        doctor={doctor}
+        isOpen={onboardingOpen}
         onOpenChange={setOnboardingOpen}
         onProfileUpdate={handleOnboardingComplete}
       />
@@ -66,7 +81,7 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="flex flex-col gap-8 p-4 md:p-8">
+    <div className="flex flex-col gap-8">
       <div className="space-y-2">
         <Skeleton className="h-8 w-1/4" />
         <Skeleton className="h-4 w-1/3" />

@@ -34,17 +34,17 @@ export function generateScanReportPDF(data: PDFReportData): void {
 
   // Header
   doc.setFontSize(24);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('LUNGVISION MEDICAL CENTER', 105, yPosition, { align: 'center' });
 
   yPosition += 10;
   doc.setFontSize(16);
-  doc.setTextColor(...secondaryColor);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
   doc.text('Advanced CT Scan Analysis Report', 105, yPosition, { align: 'center' });
 
   yPosition += 15;
   doc.setFontSize(18);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('CT SCAN ANALYSIS REPORT', 105, yPosition, { align: 'center' });
 
   // Report metadata
@@ -67,32 +67,28 @@ export function generateScanReportPDF(data: PDFReportData): void {
   // Patient Information Section
   yPosition += 20;
   doc.setFontSize(14);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('PATIENT INFORMATION', 20, yPosition);
 
   yPosition += 10;
   doc.setFontSize(11);
-  doc.setTextColor(...secondaryColor);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
   doc.text(`Patient Name: ${data.patient.name}`, 20, yPosition);
   doc.text(`Patient ID: ${data.patient.id}`, 120, yPosition);
 
   yPosition += 8;
   doc.text(`Age: ${data.patient.age} years`, 20, yPosition);
-  doc.text(`Contact: ${data.patient.contact || 'N/A'}`, 120, yPosition);
-
-  yPosition += 8;
-  doc.text(`Email: ${data.patient.email || 'N/A'}`, 20, yPosition);
-  doc.text(`Address: ${data.patient.address || 'N/A'}`, 120, yPosition);
+  doc.text(`Phone: ${data.patient.phone || 'N/A'}`, 120, yPosition);
 
   // Scan Information Section
   yPosition += 20;
   doc.setFontSize(14);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('SCAN INFORMATION', 20, yPosition);
 
   yPosition += 10;
   doc.setFontSize(11);
-  doc.setTextColor(...secondaryColor);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
   doc.text(`Scan Type: Lung CT Scan`, 20, yPosition);
   doc.text(`Date: ${data.scanDate}`, 120, yPosition);
 
@@ -103,12 +99,12 @@ export function generateScanReportPDF(data: PDFReportData): void {
   // AI Analysis Results Section
   yPosition += 20;
   doc.setFontSize(14);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('AI ANALYSIS RESULTS', 20, yPosition);
 
   yPosition += 10;
   doc.setFontSize(11);
-  doc.setTextColor(...secondaryColor);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
   const primaryDiagnosis = data.scanResult.hasCancer ? 'Potential Cancer Detected' : 'Normal';
   doc.text(`Primary Diagnosis: ${primaryDiagnosis}`, 20, yPosition);
   doc.text(`Confidence Level: ${data.scanResult.accuracyPercentage.toFixed(1)}%`, 120, yPosition);
@@ -141,12 +137,12 @@ export function generateScanReportPDF(data: PDFReportData): void {
 
   yPosition += 10;
   doc.setFontSize(14);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('HEALTH RECOMMENDATIONS', 20, yPosition);
 
   yPosition += 10;
   doc.setFontSize(11);
-  doc.setTextColor(...secondaryColor);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
 
   const recommendations = data.scanResult.hasCancer
     ? [
@@ -172,10 +168,10 @@ export function generateScanReportPDF(data: PDFReportData): void {
         doc.text(`${index + 1}. ${rec}`, 20, yPosition);
       } else {
         doc.setFontSize(12);
-        doc.setTextColor(...primaryColor);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.text(`${index % 2 === 0 ? Math.floor(index / 2) + 1 : ''}. ${rec}`, 20, yPosition);
         doc.setFontSize(11);
-        doc.setTextColor(...secondaryColor);
+        doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
       }
     } else {
       doc.text(rec, 30, yPosition);
@@ -190,7 +186,7 @@ export function generateScanReportPDF(data: PDFReportData): void {
 
   yPosition += 20;
   doc.setFontSize(14);
-  doc.setTextColor(...accentColor);
+  doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
   doc.text('IMPORTANT DISCLAIMER', 20, yPosition);
 
   yPosition += 10;
@@ -203,7 +199,7 @@ export function generateScanReportPDF(data: PDFReportData): void {
   // Footer
   yPosition += 30;
   doc.setFontSize(10);
-  doc.setTextColor(...primaryColor);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('Lungvision Medical Center | Advanced AI Diagnostics | https://lungcare-ai.netlify.app/', 105, yPosition, { align: 'center' });
 
   // Save the PDF
