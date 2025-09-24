@@ -18,15 +18,22 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
+        {/* Preconnect for Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="font-body antialiased h-full bg-gradient-to-br from-slate-50 to-blue-50">
         <AuthProvider>
           <SidebarProvider>
-            <div className="flex h-full">
+            <div className="flex h-full min-h-screen">
+              {/* Sidebar */}
               <AppSidebar />
+
+              {/* Main content */}
               <main className="flex-1 overflow-y-auto">
                 <div className="container mx-auto px-4 py-8 max-w-7xl">
                   {children}
@@ -34,6 +41,8 @@ export default function RootLayout({
               </main>
             </div>
           </SidebarProvider>
+
+          {/* Global notifications */}
           <Toaster />
         </AuthProvider>
       </body>

@@ -53,9 +53,9 @@ export default function PatientsPage() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center items-center">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-64" />
+          <Skeleton key={i} className="h-64 w-full" />
         ))}
       </div>
     );
@@ -63,10 +63,10 @@ export default function PatientsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Patients</h1>
-        <Button asChild>
-          <Link href="/patients/new">
+      <div className="flex flex-col sm:flex-row justify-between items-center">
+        <h1 className="text-2xl font-bold text-center sm:text-left">Patients</h1>
+        <Button asChild className="mt-4 sm:mt-0">
+          <Link href="/patients/new" className="flex items-center justify-center">
             <Plus className="mr-2 h-4 w-4" />
             Add Patient
           </Link>
@@ -74,21 +74,21 @@ export default function PatientsPage() {
       </div>
 
       {patients.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="flex flex-col justify-center items-center py-12 text-center">
           <p className="text-muted-foreground mb-4">No patients registered yet.</p>
           <Button asChild>
-            <Link href="/patients/new">
+            <Link href="/patients/new" className="flex items-center justify-center">
               <Plus className="mr-2 h-4 w-4" />
               Register First Patient
             </Link>
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
           {patients.map(patient => (
             <Card key={patient.id} className="flex flex-col bg-card/80 backdrop-blur-sm">
-              <CardHeader className="flex-row items-center gap-4">
-                <Avatar className="h-12 w-12">
+              <CardHeader className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                <Avatar className="h-12 w-12 mx-auto sm:mx-0">
                   <AvatarImage src={patient.avatar} alt={patient.name} />
                   <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
                 </Avatar>
@@ -97,7 +97,7 @@ export default function PatientsPage() {
                   <CardDescription>{patient.registration_id}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="flex-grow">
+              <CardContent className="flex-grow text-center sm:text-left">
                 <div className="text-sm text-muted-foreground">
                   <p>
                     {patient.age} years old, {patient.gender}
@@ -107,7 +107,7 @@ export default function PatientsPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild className="w-full">
-                  <Link href={`/patients/${patient.id}`}>
+                  <Link href={`/patients/${patient.id}`} className="flex items-center justify-center">
                     View History <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
