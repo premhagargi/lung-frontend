@@ -55,7 +55,7 @@ export default function PatientsPage() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center items-center">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-64 w-full" />
+          <Skeleton key={i} className="h-64 w-full max-w-xs sm:max-w-sm" />
         ))}
       </div>
     );
@@ -86,15 +86,18 @@ export default function PatientsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
           {patients.map(patient => (
-            <Card key={patient.id} className="flex flex-col bg-card/80 backdrop-blur-sm">
+            <Card
+              key={patient.id}
+              className="flex flex-col bg-card/80 backdrop-blur-sm w-full max-w-sm sm:max-w-md mx-auto"
+            >
               <CardHeader className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                 <Avatar className="h-12 w-12 mx-auto sm:mx-0">
                   <AvatarImage src={patient.avatar} alt={patient.name} />
                   <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle>{patient.name}</CardTitle>
-                  <CardDescription>{patient.registration_id}</CardDescription>
+                  <CardTitle className='text-lg'>{patient.name}</CardTitle>
+                  {/* <CardDescription className='text-xs'>{patient.registration_id}</CardDescription> */}
                 </div>
               </CardHeader>
               <CardContent className="flex-grow text-center sm:text-left">
@@ -107,7 +110,10 @@ export default function PatientsPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild className="w-full">
-                  <Link href={`/patients/${patient.id}`} className="flex items-center justify-center">
+                  <Link
+                    href={`/patients/${patient.id}`}
+                    className="flex items-center justify-center"
+                  >
                     View History <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
