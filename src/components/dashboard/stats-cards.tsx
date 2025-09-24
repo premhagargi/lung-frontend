@@ -7,6 +7,7 @@ interface StatsCardsProps {
   stats: {
     scans: number;
     patients: number;
+    accuracy?: number;
   };
 }
 
@@ -39,7 +40,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">92.8%</div>
+          <div className="text-2xl font-bold">{stats.accuracy ? `${stats.accuracy.toFixed(1)}%` : '92.8%'}</div>
           <p className="text-xs text-muted-foreground">Average across all scans</p>
         </CardContent>
       </Card>

@@ -9,6 +9,8 @@ export interface Doctor {
   phone: string;
   is_profile_complete: boolean;
   avatar: string;
+  created_at?: string;
+  last_activity?: string;
 }
 
 export type PatientGender = 'Male' | 'Female' | 'Other';
@@ -23,6 +25,7 @@ export interface Patient {
   medical_history: string;
   doctor_id: string;
   avatar: string;
+  created_at?: string;
 }
 
 export type ScanStatus = 'Pending' | 'Analyzed' | 'Reviewed';
