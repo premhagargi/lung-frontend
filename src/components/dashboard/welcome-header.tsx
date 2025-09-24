@@ -9,8 +9,8 @@ export default function WelcomeHeader({ name }: WelcomeHeaderProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold tracking-tight">Welcome back, {name}!</h1>
-      <p className="text-muted-foreground">{currentDate}</p>
+      <h1 className="text-4xl tracking-tight">Welcome back, Dr. {name}!</h1>
+      <h5 className="text-muted-foreground tracking-tght">{currentDate}</h5>
     </div>
   );
 }

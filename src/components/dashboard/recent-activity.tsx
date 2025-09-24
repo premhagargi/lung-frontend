@@ -53,8 +53,8 @@ export default function RecentActivity({ patients, scans }: RecentActivityProps)
     <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center">
         <div className="grid gap-2">
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 font-normal">
+            <Activity className="h-5 w-5 font-normal" />
             Recent Activity
           </CardTitle>
           <CardDescription>

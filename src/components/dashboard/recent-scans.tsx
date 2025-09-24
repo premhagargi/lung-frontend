@@ -57,7 +57,7 @@ export default function RecentScans({ scans, patients }: RecentScansProps) {
     <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center">
         <div className="grid gap-2">
-          <CardTitle>Recent Scans</CardTitle>
+          <CardTitle className='font-normal'>Recent Scans</CardTitle>
           <CardDescription>
             An overview of the most recent analyses performed.
           </CardDescription>
