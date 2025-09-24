@@ -60,27 +60,40 @@ const analyzeLungScanImageFlow = ai.defineFlow(
     outputSchema: AnalyzeLungScanImageOutputSchema,
   },
   async ({ scanImageUri }) => {
-    
+
     const imageBlob = dataURItoBlob(scanImageUri);
     const formData = new FormData();
-    formData.append('image', imageBlob, 'scan.png');
+    formData.append('file', imageBlob, 'scan.png');
 
-    const response = await fetch('https://lung-backend-g0he.onrender.com/predict', {
-      method: 'POST',
-      body: formData,
-    });
+    const models = ['cnn', 'nb', 'resnet'];
+    const predictions: { model: string; prediction: string; confidence: number }[] = [];
 
-    if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
+    for (const model of models) {
+      try {
+        const response = await fetch(`http://localhost:5000/predict/${model}`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`API call failed for ${model} with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        predictions.push({
+          model: model.toUpperCase(),
+          prediction: data.prediction,
+          confidence: parseFloat(data.confidence),
+        });
+      } catch (error) {
+        console.error(`Error calling ${model}:`, error);
+        // Skip this model or handle error
+      }
     }
 
-    const data = await response.json();
-    
-    const predictions = Object.entries(data).map(([model, value]: [string, any]) => ({
-      model: model,
-      prediction: value.prediction,
-      confidence: parseFloat(value.confidence.replace('%', '')),
-    }));
+    if (predictions.length === 0) {
+      throw new Error('All model predictions failed');
+    }
 
     const highestConfidencePrediction = predictions.reduce((max, p) => p.confidence > max.confidence ? p : max, predictions[0]);
     const hasCancer = predictions.some(p => p.prediction.toLowerCase().includes('carcinoma'));
@@ -94,10 +107,10 @@ const analyzeLungScanImageFlow = ai.defineFlow(
       : ['No immediate treatment required.'];
 
     return {
-      predictions: Object.entries(data).map(([model, value]: [string, any]) => ({
-        model,
-        prediction: value.prediction,
-        confidence: value.confidence,
+      predictions: predictions.map(p => ({
+        model: p.model,
+        prediction: p.prediction,
+        confidence: p.confidence.toString(),
       })),
       hasCancer,
       accuracyPercentage: Math.round(highestConfidencePrediction.confidence),
