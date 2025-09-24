@@ -54,14 +54,20 @@ export function ScanDetailsModal({ scan, patient, isOpen, onOpenChange }: ScanDe
 
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <div className="relative aspect-video w-full">
-                  <Image
-                    src={scan.scan_image_url}
-                    alt={`Scan for ${patient.name}`}
-                    fill
-                    className="rounded-lg object-cover border"
-                  />
-                </div>
+                {scan.scan_image_url ? (
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={scan.scan_image_url}
+                      alt={`Scan for ${patient.name}`}
+                      fill
+                      className="rounded-lg object-cover border"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative aspect-video w-full bg-muted rounded-lg border flex items-center justify-center">
+                    <p className="text-muted-foreground">Scan image not available</p>
+                  </div>
+                )}
                  {scan.ai_analysis.predictions && (
                   <ModelPredictionsChart predictions={scan.ai_analysis.predictions} />
                 )}

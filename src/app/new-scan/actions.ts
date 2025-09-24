@@ -35,7 +35,7 @@ export async function performScanAnalysis(input: ActionInput): Promise<ActionRes
       patient_id: patient.id,
       doctor_id: patient.doctor_id,
       consultation_date: new Date().toISOString(),
-      scan_image_url: scanImageUri, // For simplicity, storing the data URI. In a real app, this would be a URL from storage.
+      scan_image_url: '', // Not storing image data as requested
       ai_analysis: {
         has_cancer: aiAnalysis.hasCancer,
         accuracy_percentage: aiAnalysis.accuracyPercentage,

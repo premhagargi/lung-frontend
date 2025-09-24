@@ -70,43 +70,54 @@ export default function RecentScans({ scans, patients }: RecentScansProps) {
         </Button>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Patient</TableHead>
-              <TableHead className="hidden sm:table-cell">Status</TableHead>
-              <TableHead className="text-right">Date</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {scans.map(scan => {
-              const patient = getPatientForScan(scan.patient_id);
-              if (!patient) return null;
-              return (
-                <TableRow key={scan.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-4">
-                      <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src={patient.avatar} alt={patient.name} />
-                        <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
-                      </Avatar>
-                      <div className="grid gap-1">
-                        <p className="font-medium">{patient.name}</p>
-                        <p className="text-sm text-muted-foreground">{patient.registration_id}</p>
+        {scans.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground mb-4">No scans performed yet.</p>
+            <Button asChild size="sm">
+              <Link href="/patients">
+                Register Patients to Start
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Patient</TableHead>
+                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                <TableHead className="text-right">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {scans.map(scan => {
+                const patient = getPatientForScan(scan.patient_id);
+                if (!patient) return null;
+                return (
+                  <TableRow key={scan.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-4">
+                        <Avatar className="hidden h-9 w-9 sm:flex">
+                          <AvatarImage src={patient.avatar} alt={patient.name} />
+                          <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="grid gap-1">
+                          <p className="font-medium">{patient.name}</p>
+                          <p className="text-sm text-muted-foreground">{patient.registration_id}</p>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {getStatusBadge(scan.ai_analysis.has_cancer)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatDistanceToNow(new Date(scan.consultation_date), { addSuffix: true })}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {getStatusBadge(scan.ai_analysis.has_cancer)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatDistanceToNow(new Date(scan.consultation_date), { addSuffix: true })}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );

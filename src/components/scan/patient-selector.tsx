@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getPatients, addPatient } from '@/lib/data';
+import { getPatients, addPatient, getDoctor } from '@/lib/data';
 import type { Patient, PatientGender } from '@/lib/types';
 import {
   Form,
@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/lib/auth-context';
 
 interface PatientSelectorProps {
   onPatientSelect: (patient: Patient) => void;
@@ -46,7 +47,9 @@ export default function PatientSelector({ onPatientSelect }: PatientSelectorProp
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+  const [doctorId, setDoctorId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const form = useForm<NewPatientForm>({
     resolver: zodResolver(newPatientSchema),
@@ -54,14 +57,29 @@ export default function PatientSelector({ onPatientSelect }: PatientSelectorProp
   });
 
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchData = async () => {
+      if (!user) return;
+
       setLoading(true);
-      const data = await getPatients('1'); // Assuming doctor '1'
-      setPatients(data);
-      setLoading(false);
+      try {
+        const doctorData = await getDoctor(user.uid);
+        setDoctorId(doctorData.id);
+        const patientsData = await getPatients(doctorData.id);
+        setPatients(patientsData);
+      } catch (error) {
+        console.error('Failed to load patients:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to load patients.'
+        });
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchPatients();
-  }, []);
+
+    fetchData();
+  }, [user, toast]);
 
   const handleSelectExisting = () => {
     if (!selectedPatientId) {
@@ -73,16 +91,24 @@ export default function PatientSelector({ onPatientSelect }: PatientSelectorProp
   };
 
   const handleCreateNew = async (values: NewPatientForm) => {
+    if (!doctorId) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Doctor information not available.' });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const newPatient = await addPatient({
         ...values,
-        doctor_id: '1',
-        registration_id: `P${Math.floor(1000 + Math.random() * 9000)}`,
-        phone: '555-0199', // dummy data
+        doctor_id: doctorId,
+        registration_id: `PAT-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+        phone: '', // Will be filled in patient registration
         avatar: '', // will be assigned in data.ts
       });
       toast({ title: 'Patient Created', description: `${newPatient.name} has been added.` });
+      // Refresh patients list
+      const patientsData = await getPatients(doctorId);
+      setPatients(patientsData);
       onPatientSelect(newPatient);
     } catch (error) {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to create patient.' });

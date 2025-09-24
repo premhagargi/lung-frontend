@@ -29,7 +29,7 @@ export async function getDoctor(id: string): Promise<Doctor> {
     throw new Error('Doctor not found');
   }
 
-  return doctorSnap.data() as Doctor;
+  return { id: doctorSnap.id, ...doctorSnap.data() } as Doctor;
 }
 
 export async function updateDoctorProfile(id: string, data: Partial<Omit<Doctor, 'id'>>): Promise<Doctor> {
@@ -88,14 +88,14 @@ export async function getScansForPatient(patientId: string): Promise<LungScan[]>
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LungScan));
 }
 
-export async function getRecentScans(doctorId: string, limit: number): Promise<LungScan[]> {
+export async function getRecentScans(doctorId: string, limitCount: number): Promise<LungScan[]> {
     await delay(500);
     const scansRef = collection(db, 'scans');
     const q = query(
       scansRef,
       where('doctor_id', '==', doctorId),
       orderBy('consultation_date', 'desc'),
-      limit(limit)
+      limit(limitCount)
     );
     const querySnapshot = await getDocs(q);
 
