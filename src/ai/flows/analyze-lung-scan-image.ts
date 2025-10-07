@@ -9,6 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import config from "../../../config.json"
 
 const AnalyzeLungScanImageInputSchema = z.object({
   scanImageUri: z
@@ -82,7 +83,7 @@ const analyzeLungScanImageFlow = ai.defineFlow(
 
     for (const model of models) {
       try {
-        const response = await fetch(`http://localhost:5000/predict/${model}`, {
+        const response = await fetch(`${config.API_BASE_URL}/predict/${model}`, {
           method: 'POST',
           body: formData,
         });
